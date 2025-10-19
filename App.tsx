@@ -1,10 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import { generateMarketingContent } from './services/geminiService';
-import type { MarketingContent } from './types';
-import { InputGroup } from './components/InputGroup';
-import { OutputCard } from './components/OutputCard';
-import { LoadingSpinner } from './components/LoadingSpinner';
-import { ClipboardIcon } from './components/ClipboardIcon';
+import { generateMarketingContent } from './services/geminiService.ts';
+import type { MarketingContent } from './types.ts';
+import { InputGroup } from './components/InputGroup.tsx';
+import { OutputCard } from './components/OutputCard.tsx';
+import { LoadingSpinner } from './components/LoadingSpinner.tsx';
+import { ClipboardIcon } from './components/ClipboardIcon.tsx';
 
 const App: React.FC = () => {
   const [productName, setProductName] = useState('');

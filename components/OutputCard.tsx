@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { ClipboardIcon } from './ClipboardIcon';
+import { ClipboardIcon } from './ClipboardIcon.tsx';
 
 interface OutputCardProps {
   title: string;
