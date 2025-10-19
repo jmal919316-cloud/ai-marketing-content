@@ -1,7 +1,6 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
-import type { MarketingContent, ProductDetails } from '../types';
-import { SYSTEM_PROMPT, RESPONSE_SCHEMA } from '../constants';
+import type { MarketingContent, ProductDetails } from './types';
+import { SYSTEM_PROMPT, RESPONSE_SCHEMA } from './constants';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
