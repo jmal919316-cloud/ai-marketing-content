@@ -5,6 +5,7 @@ import type { MarketingContent } from './types';
 import { InputGroup } from './components/InputGroup';
 import { OutputCard } from './components/OutputCard';
 import { LoadingSpinner } from './components/LoadingSpinner';
+import { ClipboardIcon } from './components/ClipboardIcon';
 
 const App: React.FC = () => {
   const [productName, setProductName] = useState('');
@@ -15,6 +16,7 @@ const App: React.FC = () => {
   const [generatedContent, setGeneratedContent] = useState<MarketingContent | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAllCopied, setIsAllCopied] = useState(false);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +39,47 @@ const App: React.FC = () => {
       setIsLoading(false);
     }
   }, [productName, category, price, notes]);
+
+  const handleCopyAll = useCallback(() => {
+    if (!generatedContent) return;
+
+    const allContent = `
+الوصف التسويقي:
+${generatedContent.productDescription}
+
+---
+
+منشور للسوشيال ميديا:
+${generatedContent.socialMediaPost}
+
+---
+
+عنوان إعلاني:
+${generatedContent.adHeadline}
+
+---
+
+نقاط البيع الفريدة:
+- ${generatedContent.uniqueSellingPoints.join('\n- ')}
+
+---
+
+هاشتاغات:
+${generatedContent.hashtags.join(' ')}
+    `.trim();
+
+    navigator.clipboard.writeText(allContent);
+    setIsAllCopied(true);
+    setTimeout(() => setIsAllCopied(false), 2000);
+  }, [generatedContent]);
+
+  const outputSections = generatedContent ? [
+    { title: "الوصف التسويقي", content: generatedContent.productDescription },
+    { title: "منشور للسوشيال ميديا", content: generatedContent.socialMediaPost },
+    { title: "عنوان إعلاني", content: generatedContent.adHeadline },
+    { title: "نقاط البيع الفريدة", content: generatedContent.uniqueSellingPoints },
+    { title: "هاشتاغات", content: generatedContent.hashtags },
+  ] : [];
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-200 font-sans">
@@ -81,7 +124,29 @@ const App: React.FC = () => {
 
           {/* Output Section */}
           <div className="bg-slate-800/50 p-6 rounded-2xl shadow-lg border border-slate-700 min-h-[400px] flex flex-col">
-             <h2 className="text-2xl font-bold mb-6 text-white border-b-2 border-cyan-500 pb-3">المحتوى المُولَّد</h2>
+            <div className="flex justify-between items-center mb-6 border-b-2 border-cyan-500 pb-3">
+               <h2 className="text-2xl font-bold text-white">المحتوى المُولَّد</h2>
+               {generatedContent && (
+                <button
+                  onClick={handleCopyAll}
+                  className="flex items-center gap-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white font-semibold py-1.5 px-3 rounded-md transition-all duration-200"
+                >
+                  {isAllCopied ? (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span>تم النسخ!</span>
+                    </>
+                  ) : (
+                    <>
+                      <ClipboardIcon />
+                      <span>نسخ الكل</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
             <div className="flex-grow flex items-center justify-center">
               {isLoading && <LoadingSpinner large={true} />}
               {error && <p className="text-red-400 text-center">{error}</p>}
@@ -90,11 +155,14 @@ const App: React.FC = () => {
               )}
               {generatedContent && (
                 <div className="w-full space-y-4 animate-fade-in">
-                  <OutputCard title="الوصف التسويقي" content={generatedContent.productDescription} />
-                  <OutputCard title="منشور للسوشيال ميديا" content={generatedContent.socialMediaPost} />
-                  <OutputCard title="عنوان إعلاني" content={generatedContent.adHeadline} />
-                  <OutputCard title="نقاط البيع الفريدة" content={generatedContent.uniqueSellingPoints} />
-                  <OutputCard title="هاشتاغات" content={generatedContent.hashtags} />
+                  {outputSections.map((section, index) => (
+                     <OutputCard 
+                       key={section.title} 
+                       title={section.title} 
+                       content={section.content}
+                       colorIndex={index}
+                     />
+                  ))}
                 </div>
               )}
             </div>
