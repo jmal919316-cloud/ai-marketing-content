@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { generateMarketingContent } from './services/geminiService';
 import type { MarketingContent } from './types';
@@ -28,6 +27,7 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setGeneratedContent(null);
+    setIsAllCopied(false);
 
     try {
       const content = await generateMarketingContent({ productName, category, price, notes });
@@ -126,7 +126,7 @@ ${generatedContent.hashtags.join(' ')}
           <div className="bg-slate-800/50 p-6 rounded-2xl shadow-lg border border-slate-700 min-h-[400px] flex flex-col">
             <div className="flex justify-between items-center mb-6 border-b-2 border-cyan-500 pb-3">
                <h2 className="text-2xl font-bold text-white">المحتوى المُولَّد</h2>
-               {generatedContent && (
+               {generatedContent && !isLoading && (
                 <button
                   onClick={handleCopyAll}
                   className="flex items-center gap-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white font-semibold py-1.5 px-3 rounded-md transition-all duration-200"
@@ -149,7 +149,7 @@ ${generatedContent.hashtags.join(' ')}
             </div>
             <div className="flex-grow flex items-center justify-center">
               {isLoading && <LoadingSpinner large={true} />}
-              {error && <p className="text-red-400 text-center">{error}</p>}
+              {error && !isLoading && <p className="text-red-400 text-center">{error}</p>}
               {!isLoading && !error && !generatedContent && (
                 <p className="text-slate-500 text-center">سيظهر المحتوى هنا بعد إدخال تفاصيل المنتج.</p>
               )}

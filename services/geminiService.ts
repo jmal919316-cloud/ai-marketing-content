@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import type { MarketingContent, ProductDetails } from './types';
 import { SYSTEM_PROMPT, RESPONSE_SCHEMA } from './constants';
 
@@ -24,9 +24,9 @@ export const generateMarketingContent = async (details: ProductDetails): Promise
 
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
-        contents: userPrompt,
+        contents: [{role: 'user', parts: [{text: userPrompt}]}],
         config: {
-            systemInstruction: SYSTEM_PROMPT,
+            systemInstruction: {role: 'model', parts: [{text: SYSTEM_PROMPT}]},
             responseMimeType: "application/json",
             responseSchema: RESPONSE_SCHEMA,
             temperature: 0.7,
@@ -34,6 +34,10 @@ export const generateMarketingContent = async (details: ProductDetails): Promise
     });
 
     const jsonText = response.text.trim();
+    // A simple check to see if the response is valid JSON
+    if (!jsonText.startsWith('{') && !jsonText.startsWith('[')) {
+        throw new Error('Invalid JSON response from API');
+    }
     const parsedContent: MarketingContent = JSON.parse(jsonText);
     
     return parsedContent;
