@@ -24,9 +24,9 @@ export const generateMarketingContent = async (details: ProductDetails): Promise
 
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
-        contents: [{role: 'user', parts: [{text: userPrompt}]}],
+        contents: userPrompt,
         config: {
-            systemInstruction: {role: 'model', parts: [{text: SYSTEM_PROMPT}]},
+            systemInstruction: SYSTEM_PROMPT,
             responseMimeType: "application/json",
             responseSchema: RESPONSE_SCHEMA,
             temperature: 0.7,
